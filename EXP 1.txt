@@ -1,0 +1,19 @@
+text = input("Enter text: ")
+k = int(input("Enter key (1-25): "))
+
+result = ""
+
+for ch in text:
+    # Uppercase A–Z
+    if 'A' <= ch <= 'Z':
+        result += chr((ord(ch) - ord('A') + k) % 26 + ord('A'))
+    
+    # Lowercase a–z
+    elif 'a' <= ch <= 'z':
+        result += chr((ord(ch) - ord('a') + k) % 26 + ord('a'))
+    
+    # Other characters (spaces, numbers)
+    else:
+        result += ch
+
+print("Encrypted text:", result)

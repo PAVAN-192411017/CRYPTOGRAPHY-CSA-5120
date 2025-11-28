@@ -1,0 +1,20 @@
+text = input("Enter plaintext: ")
+
+# Simple substitution alphabet
+cipher = "QWERTYUIOPASDFGHJKLZXCVBNM"
+
+result = ""
+
+for ch in text:
+    if ch.isalpha():  # if it is a letter
+        index = ord(ch.lower()) - ord('a')   # position 0–25
+        new_char = cipher[index]
+
+        if ch.isupper():
+            result += new_char               # keep uppercase
+        else:
+            result += new_char.lower()       # convert to lowercase
+    else:
+        result += ch   # keep spaces, numbers, symbols
+
+print("Ciphertext:", result)
