@@ -1,0 +1,42 @@
+def generate_key_mapping(keyword):
+    keyword = keyword.upper()
+    result = ""
+
+    # Add keyword letters without duplicates
+    for ch in keyword:
+        if ch not in result and ch.isalpha():
+            result += ch
+
+    # Add remaining letters A–Z
+    for ch in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+        if ch not in result:
+            result += ch
+
+    return result  # cipher alphabet
+
+
+def encrypt(plaintext, cipher_alpha):
+    plaintext = plaintext.upper()
+    ciphertext = ""
+
+    for ch in plaintext:
+        if ch.isalpha():
+            index = ord(ch) - 65
+            ciphertext += cipher_alpha[index]
+        else:
+            ciphertext += ch
+
+    return ciphertext
+
+
+# MAIN
+keyword = "CIPHER"
+cipher_alpha = generate_key_mapping(keyword)
+
+print("Keyword:", keyword)
+print("Cipher Alphabet:", cipher_alpha)
+
+plaintext = input("Enter plaintext: ")
+ciphertext = encrypt(plaintext, cipher_alpha)
+
+print("\nCiphertext:", ciphertext)

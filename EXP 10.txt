@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+char matrix[5][5] = {
+    {'M','F','H','I','K'},
+    {'U','N','O','P','Q'},
+    {'Z','V','W','X','Y'},
+    {'E','L','A','R','G'},
+    {'D','S','T','B','C'}
+};
+
+void findPosition(char ch, int *row, int *col) {
+    if (ch == 'J') ch = 'I';  // I/J combined
+    for (int i = 0; i < 5; i++)
+        for (int j = 0; j < 5; j++)
+            if (matrix[i][j] == ch) {
+                *row = i;
+                *col = j;
+                return;
+            }
+}
+
+void prepareText(char *text, char *result) {
+    int len = strlen(text);
+    int k = 0;
+
+    for (int i = 0; i < len; i++) {
+        if (isalpha(text[i])) {
+            result[k++] = toupper(text[i] == 'J' ? 'I' : text[i]);
+        }
+    }
+    result[k] = '\0';
+
+    char temp[200];
+    int p = 0;
+    for (int i = 0; i < k; i++) {
+        temp[p++] = result[i];
+        if (i + 1 < k && result[i] == result[i+1])
+            temp[p++] = 'X';
+    }
+    if (p % 2 != 0)
+        temp[p++] = 'X';
+
+    temp[p] = '\0';
+    strcpy(result, temp);
+}
+
+void encryptPair(char a, char b, char *out) {
+    int r1, c1, r2, c2;
+    findPosition(a, &r1, &c1);
+    findPosition(b, &r2, &c2);
+
+    if (r1 == r2) { 
+        out[0] = matrix[r1][(c1 + 1) % 5];
+        out[1] = matrix[r2][(c2 + 1) % 5];
+    }
+    else if (c1 == c2) { 
+        out[0] = matrix[(r1 + 1) % 5][c1];
+        out[1] = matrix[(r2 + 1) % 5][c2];
+    }
+    else {
+        out[0] = matrix[r1][c2];
+        out[1] = matrix[r2][c1];
+    }
+}
+
+void encryptPlayfair(char *text, char *cipher) {
+    char prepared[200];
+    prepareText(text, prepared);
+
+    int len = strlen(prepared);
+    int k = 0;
+
+    for (int i = 0; i < len; i += 2) {
+        encryptPair(prepared[i], prepared[i+1], &cipher[k]);
+        k += 2;
+    }
+
+    cipher[k] = '\0';
+}
+
+int main() {
+    char text[] = "Must see you over Cadogan West. Coming at once.";
+    char cipher[300];
+
+    encryptPlayfair(text, cipher);
+
+    printf("Plaintext: %s\n", text);
+    printf("Ciphertext: %s\n", cipher);
+
+    return 0;
+}

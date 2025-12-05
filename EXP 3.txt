@@ -1,0 +1,86 @@
+def generate_matrix(key):
+    key = key.upper().replace("J", "I")
+    matrix = []
+    used = set()
+
+    for char in key:
+        if char not in used and char.isalpha():
+            matrix.append(char)
+            used.add(char)
+
+    for char in "ABCDEFGHIKLMNOPQRSTUVWXYZ":  # J removed
+        if char not in used:
+            matrix.append(char)
+
+    return [matrix[i:i+5] for i in range(0, 25, 5)]
+
+
+def find_position(matrix, letter):
+    for i in range(5):
+        for j in range(5):
+            if matrix[i][j] == letter:
+                return i, j
+    return None
+
+
+def prepare_text(text):
+    text = text.upper().replace("J", "I")
+    cleaned = ""
+
+    for char in text:
+        if char.isalpha():
+            cleaned += char
+
+    prepared = ""
+    i = 0
+    while i < len(cleaned):
+        prepared += cleaned[i]
+        if i + 1 < len(cleaned) and cleaned[i] != cleaned[i + 1]:
+            prepared += cleaned[i + 1]
+            i += 2
+        else:
+            prepared += "X"
+            i += 1
+
+    if len(prepared) % 2 != 0:
+        prepared += "X"
+
+    return prepared
+
+
+def encrypt_pair(a, b, matrix):
+    r1, c1 = find_position(matrix, a)
+    r2, c2 = find_position(matrix, b)
+
+    if r1 == r2:  # same row
+        return matrix[r1][(c1 + 1) % 5] + matrix[r2][(c2 + 1) % 5]
+
+    if c1 == c2:  # same column
+        return matrix[(r1 + 1) % 5][c1] + matrix[(r2 + 1) % 5][c2]
+
+    # rectangle rule
+    return matrix[r1][c2] + matrix[r2][c1]
+
+
+def playfair_encrypt(plaintext, key):
+    matrix = generate_matrix(key)
+    text = prepare_text(plaintext)
+
+    ciphertext = ""
+    for i in range(0, len(text), 2):
+        ciphertext += encrypt_pair(text[i], text[i + 1], matrix)
+
+    return ciphertext, matrix
+
+
+# MAIN PROGRAM
+key = input("Enter keyword: ")
+plaintext = input("Enter plaintext: ")
+
+cipher, mat = playfair_encrypt(plaintext, key)
+
+print("\nPlayfair Matrix:")
+for row in mat:
+    print(row)
+
+print("\nCiphertext:", cipher)

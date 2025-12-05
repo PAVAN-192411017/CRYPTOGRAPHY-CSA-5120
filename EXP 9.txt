@@ -1,0 +1,68 @@
+def generate_matrix(key):
+    key = key.upper().replace("J", "I")
+    matrix = []
+    used = set()
+
+    for ch in key:
+        if ch.isalpha() and ch not in used:
+            matrix.append(ch)
+            used.add(ch)
+
+    for ch in "ABCDEFGHIKLMNOPQRSTUVWXYZ":
+        if ch not in used:
+            matrix.append(ch)
+
+    return [matrix[i:i+5] for i in range(0, 25, 5)]
+
+
+def find_pos(matrix, ch):
+    for i in range(5):
+        for j in range(5):
+            if matrix[i][j] == ch:
+                return i, j
+    return None
+
+
+def decrypt_pair(a, b, matrix):
+    r1, c1 = find_pos(matrix, a)
+    r2, c2 = find_pos(matrix, b)
+
+    # Same row → shift left
+    if r1 == r2:
+        return matrix[r1][(c1 - 1) % 5] + matrix[r2][(c2 - 1) % 5]
+
+    # Same column → shift up
+    if c1 == c2:
+        return matrix[(r1 - 1) % 5][c1] + matrix[(r2 - 1) % 5][c2]
+
+    # Rectangle rule
+    return matrix[r1][c2] + matrix[r2][c1]
+
+
+def playfair_decrypt(ciphertext, key):
+    matrix = generate_matrix(key)
+    cipher = ciphertext.replace(" ", "").upper()
+
+    plaintext = ""
+    for i in range(0, len(cipher), 2):
+        plaintext += decrypt_pair(cipher[i], cipher[i+1], matrix)
+
+    return plaintext, matrix
+
+
+# MAIN
+ciphertext = """KXJEY UREBE ZWEHE WRYTU HEYFS
+KREHE GOYFI WTTTU OLKSY CAJPO
+BOTEI ZONTX BYBNT GONEY CUZWR
+GDSON SXBOU YWRHE BAAHY USEDQ"""
+
+key = "ROYALNEWZEALANDNAVY"
+
+plaintext, matrix = playfair_decrypt(ciphertext, key)
+
+print("Playfair Matrix:")
+for row in matrix:
+    print(row)
+
+print("\nDecrypted Plaintext:")
+print(plaintext)

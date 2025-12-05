@@ -1,0 +1,23 @@
+def encrypt_affine(plaintext, a, b):
+    plaintext = plaintext.upper()
+    ciphertext = ""
+
+    for char in plaintext:
+        if char.isalpha():
+            p = ord(char) - 65
+            c = (a * p + b) % 26
+            ciphertext += chr(c + 65)
+        else:
+            ciphertext += char
+
+    return ciphertext
+
+
+# MAIN PROGRAM
+plaintext = input("Enter plaintext: ")
+a = int(input("Enter value of a: "))
+b = int(input("Enter value of b: "))
+
+cipher = encrypt_affine(plaintext, a, b)
+
+print("\nCiphertext:", cipher)
